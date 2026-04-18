@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>uBlog | 极简但功能齐全的博客 CMS</title>
+    <meta
+      name="description"
+      content="uBlog 是基于 Cloudflare Worker + D1 的极简博客系统：轻量、可扩展、支持文章上锁、REST API 与沉浸式 Markdown 写作。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,0,0"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="#top">uBlog</a>
+        <nav class="nav-links">
+          <a href="#features">特性</a>
+          <a href="#architecture">架构</a>
+          <a href="#api">API</a>
+          <a href="#deploy">部署</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero section-dark">
+        <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
+        <div class="container hero-content">
+          <p class="pill" data-reveal>
+            <span class="material-symbols-outlined" aria-hidden="true">bolt</span>
+            Cloudflare Worker + D1
+          </p>
+          <h1 data-reveal>uBlog：极简，但功能齐全的博客 CMS</h1>
+          <p class="hero-desc" data-reveal>
+            面向个人开发者与小团队，单文件 Worker 架构、两张数据表、原生 API
+            驱动。你可以快速搭建一个优雅、可定制、低维护成本的博客系统。
+          </p>
+          <div class="hero-actions" data-reveal>
+            <a class="btn btn-primary" href="#features">查看产品特性</a>
+            <a class="btn btn-ghost" href="#api">浏览 API 设计</a>
+          </div>
+          <div class="kpis" data-reveal>
+            <article>
+              <h3>2</h3>
+              <p>仅两张核心数据表</p>
+            </article>
+            <article>
+              <h3>&lt;50K</h3>
+              <p>前后端总代码体量</p>
+            </article>
+            <article>
+              <h3>0 成本</h3>
+              <p>新手友好部署路径</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section-light">
+        <div class="container">
+          <p class="section-label" data-reveal>核心特性</p>
+          <h2 data-reveal>从写作到发布，一套闭环能力</h2>
+          <div class="feature-grid">
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">api</span>
+              <h3>REST API</h3>
+              <p>完整接口覆盖文章、配置、标签与检索，便于前后端分离和二次开发。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+              <h3>文章上锁</h3>
+              <p>支持对单篇文章加密访问，适合草稿协作、付费内容或私密记录。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">forum</span>
+              <h3>可扩展的评论系统</h3>
+              <p>通过配置字段接入 Valine 等评论方案，保持灵活与可替换性。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
+              <h3>markdown WYSIWYG沉浸式写作</h3>
+              <p>编辑体验聚焦内容本身，支持 Markdown 工作流与无干扰创作。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">web</span>
+              <h3>高度自定义的header footer，404页面</h3>
+              <p>全站关键区域可按业务注入自定义 HTML，视觉风格自由扩展。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+              <h3>方便且多样的管理员设置</h3>
+              <p>通过管理页即可维护标题、SEO、菜单、评论区与扩展配置。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
+              <h3>傻瓜式0成本部署</h3>
+              <p>利用 Cloudflare 免费层能力，一键连接 Worker 与 D1 即可上线。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">code</span>
+              <h3>仅两张表，&lt;50K的前+后端代码，极致轻量</h3>
+              <p>结构清晰、维护成本低，适合学习、实验和长期运行的小站点。</p>
+            </article>
+            <article class="feature-card" data-reveal>
+              <span class="material-symbols-outlined" aria-hidden="true">deployed_code</span>
+              <h3>极简，但功能齐全的博客CMS</h3>
+              <p>覆盖内容管理的核心路径，避免臃肿，保证体验与效率平衡。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="architecture" class="section-dark">
+        <div class="container">
+          <p class="section-label" data-reveal>系统设计</p>
+          <h2 data-reveal>函数式单文件 Worker 架构，便于扩展与维护</h2>
+          <div class="split-grid">
+            <article class="panel" data-reveal>
+              <h3>基础架构</h3>
+              <ul>
+                <li>运行时：Cloudflare Workers + D1</li>
+                <li>代码形态：单 JS 文件，部署路径更直接</li>
+                <li>认证方式：Basic Auth + 可选 Bearer Token</li>
+                <li>跨域：开放 CORS，便于多端访问</li>
+              </ul>
+            </article>
+            <article class="panel" data-reveal>
+              <h3>数据模型</h3>
+              <ul>
+                <li><strong>config</strong>：标题、描述、菜单、页脚、404、扩展字段</li>
+                <li><strong>posts</strong>：正文、状态、标签、密码哈希、评论开关</li>
+                <li>软删除策略：通过 status 字段实现安全回收</li>
+                <li>JSON 扩展：menu / extra 字段支持后续演进</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="api" class="section-light">
+        <div class="container">
+          <p class="section-label" data-reveal>接口能力</p>
+          <h2 data-reveal>面向内容生命周期的 REST API</h2>
+          <div class="api-grid">
+            <article class="api-card" data-reveal>
+              <h3>内容查询</h3>
+              <p><code>GET /api/posts</code>：支持关键词、标签、排序、分页。</p>
+              <p><code>GET /api/post?id=</code>：支持文章解锁与详情返回。</p>
+              <p><code>GET /api/tags</code>：自动去重标签列表。</p>
+            </article>
+            <article class="api-card" data-reveal>
+              <h3>内容管理</h3>
+              <p><code>POST /api/post</code>：新增文章。</p>
+              <p><code>PUT /api/post</code>：更新文章与密码。</p>
+              <p><code>DELETE /api/post</code>：软删除，保留审计空间。</p>
+            </article>
+            <article class="api-card" data-reveal>
+              <h3>站点配置</h3>
+              <p><code>GET /api/config</code>：读取全局配置。</p>
+              <p><code>PUT /api/config</code>：动态更新站点主题与页面块。</p>
+              <p><code>GET /api/docs</code>：文档跳转入口。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="deploy" class="section-dark">
+        <div class="container">
+          <p class="section-label" data-reveal>上线路径</p>
+          <h2 data-reveal>保持极简，降低运维心智负担</h2>
+          <div class="timeline">
+            <article data-reveal>
+              <span>01</span>
+              <div>
+                <h3>绑定 D1 数据库</h3>
+                <p>在 wrangler.toml 中配置 <code>binding = "DB"</code>。</p>
+              </div>
+            </article>
+            <article data-reveal>
+              <span>02</span>
+              <div>
+                <h3>初始化 schema</h3>
+                <p>执行建表 SQL，自动注入默认配置。</p>
+              </div>
+            </article>
+            <article data-reveal>
+              <span>03</span>
+              <div>
+                <h3>配置环境变量</h3>
+                <p>设置 <code>USERNAME</code>、<code>PASSWORD</code>，可选 <code>API_TOKEN</code>。</p>
+              </div>
+            </article>
+            <article data-reveal>
+              <span>04</span>
+              <div>
+                <h3>发布并开始写作</h3>
+                <p>直接进入管理页和写作页，完成站点配置与内容生产。</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="brand-wall">
+        <div class="container">
+          <p class="brand-fit" id="brandFit" aria-label="UBLOG">UBLOG</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>uBlog · Cloudflare Worker + D1 · 极简博客系统</p>
+      </div>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
