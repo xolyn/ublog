@@ -4,6 +4,12 @@
 
 仓库内另含产品展示页 [`landing/`](./landing/)（静态 HTML/CSS/JS）与系统设计说明 [`design.md`](./design.md)。线上 Worker 还会在首次请求时自动建表并注入默认 `config`（无需在 SQL 字面量中硬编码复杂 HTML）。
 
+## demo
+
+[![](iShot_2026-04-19_16.35.56.png)](https://ublog.zlybox.eu.org)
+
+[![](iShot_2026-04-19_16.36.25.png)](https://ublog.zlybox.eu.org)
+
 ---
 
 ## 特性概览
@@ -137,7 +143,7 @@
 
 | 参数 | 默认 | 说明 |
 |------|------|------|
-| `kw` | 空 | 关键词；在 `(title || char(10) || content)` 上做 `LIKE %kw%` |
+| `kw` | 空 | 关键词；在标题和内容上做 `LIKE %kw%` |
 | `tag` | 空 | 在 `tags` 字段上做 `LIKE %tag%`（子串匹配，注意与多标签逗号列表的边界） |
 | `sort` | `modified` | `modified` \| `created` \| `random` |
 | `order` | `desc` | 仅对 `modified` / `created` 有效：`asc` 或 `desc`。`random` 时忽略顺序，由 SQLite `RANDOM()` 决定 |
