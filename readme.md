@@ -6,9 +6,9 @@
 
 ## demo
 
-[![](iShot_2026-04-19_16.35.56.png)](https://ublog.zlybox.eu.org)
+[![](landing/iShot_2026-04-19_16.35.56.png)](https://ublog.zlybox.eu.org)
 
-[![](iShot_2026-04-19_16.36.25.png)](https://ublog.zlybox.eu.org)
+[![](landing/iShot_2026-04-19_16.36.25.png)](https://ublog.zlybox.eu.org)
 
 ---
 
