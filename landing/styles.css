@@ -1,3 +1,13 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('https://cdn.zhoulingyu.net/fonts/inter/InterLatin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'msr';
+  src: url('https://cdn.zhoulingyu.net/fonts/~icon/msr.woff2') format('woff2');
+}
+
 :root {
   --color-base: #1a1a1a;
   --color-surface: #fafafa;
@@ -168,6 +178,10 @@ section {
 .pill .material-symbols-outlined {
   font-size: 1rem;
   color: #9ec2ff;
+}
+
+.material-symbols-outlined{
+font-family: 'msr' !important;
 }
 
 h1,

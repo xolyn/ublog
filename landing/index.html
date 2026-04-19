@@ -10,14 +10,6 @@
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,0,0"
-    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -37,14 +29,13 @@
       <section class="hero section-dark">
         <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
         <div class="container hero-content">
-          <p class="pill" data-reveal>
-            <span class="material-symbols-outlined" aria-hidden="true">bolt</span>
-            Cloudflare Worker + D1
-          </p>
+          <p class="pill" onclick="window.location.href='https://github.com/xolyn/ublog'" style="cursor: pointer;">
+            <span style="color: rgb(231,136,60)" class="material-symbols-outlined" aria-hidden="true">bolt</span>
+            即刻部署到Cloudflare
+          </p>  
           <h1 data-reveal>uBlog：极简，但功能齐全的博客 CMS</h1>
           <p class="hero-desc" data-reveal>
-            面向个人开发者与小团队，单文件 Worker 架构、两张数据表、原生 API
-            驱动。你可以快速搭建一个优雅、可定制、低维护成本的博客系统。
+            基于Cloudflare Worker + D1，面向个人开发者与小团队，的极致轻量、优雅、可定制、低维护成本的博客系统。
           </p>
           <div class="hero-actions" data-reveal>
             <a class="btn btn-primary" href="#features">查看产品特性</a>
@@ -85,17 +76,17 @@
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">forum</span>
               <h3>可扩展的评论系统</h3>
-              <p>通过配置字段接入 Valine 等评论方案，保持灵活与可替换性。</p>
+              <p>通过配置字段接入 Valine 或 Waline 等评论方案，保持灵活与可替换性。</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
-              <h3>markdown WYSIWYG沉浸式写作</h3>
+              <h3>WYSIWYG沉浸式写作</h3>
               <p>编辑体验聚焦内容本身，支持 Markdown 工作流与无干扰创作。</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">web</span>
-              <h3>高度自定义的header footer，404页面</h3>
-              <p>全站关键区域可按业务注入自定义 HTML，视觉风格自由扩展。</p>
+              <h3>高度自定义</h3>
+              <p>全站关键区域可按业务注入自定义header footer，404页面，视觉风格自由扩展。</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">tune</span>
@@ -108,14 +99,14 @@
               <p>利用 Cloudflare 免费层能力，一键连接 Worker 与 D1 即可上线。</p>
             </article>
             <article class="feature-card" data-reveal>
-              <span class="material-symbols-outlined" aria-hidden="true">code</span>
-              <h3>仅两张表，&lt;50K的前+后端代码，极致轻量</h3>
-              <p>结构清晰、维护成本低，适合学习、实验和长期运行的小站点。</p>
+              <span class="material-symbols-outlined" aria-hidden="true">nest_eco_leaf</span>
+              <h3>极致轻量</h3>
+              <p>仅两张表，&lt;50K的前+后端代码，结构清晰、维护成本低</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">deployed_code</span>
-              <h3>极简，但功能齐全的博客CMS</h3>
-              <p>覆盖内容管理的核心路径，避免臃肿，保证体验与效率平衡。</p>
+              <h3>极简但功能齐全</h3>
+              <p>博客CMS覆盖内容管理的核心路径，避免臃肿，保证体验与效率平衡。</p>
             </article>
           </div>
         </div>
@@ -172,6 +163,12 @@
               <p><code>GET /api/docs</code>：文档跳转入口。</p>
             </article>
           </div>
+
+            <p class="pill" style="padding:1rem 1.5rem; cursor: pointer; border:1px solid #eee; margin-top: 1rem;" onclick="window.location.href='https://github.com/xolyn/ublog/blob/main/readme.md#api'" style="cursor: pointer;">
+              <span style="color: rgb(50, 0, 151)" class="material-symbols-outlined" aria-hidden="true">book</span>
+              查看完整API文档 &rarr;
+            </p>  
+
         </div>
       </section>
 
@@ -221,7 +218,7 @@
 
     <footer class="site-footer">
       <div class="container">
-        <p>uBlog · Cloudflare Worker + D1 · 极简博客系统</p>
+        <p>&copy; 2026 uBlog, a product of <a href="https://zhoulingyu.net" target="_blank">Uygnil</a></p>
       </div>
     </footer>
 

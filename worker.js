@@ -1,17 +1,6 @@
 const DOCS_REDIRECT_DEFAULT =
   'https://github.com/zhoulingyu/ublog-cf/blob/main/design.md#api';
 
-const DEFAULT_MENU = Object.freeze({
-  首页: '/',
-  写作: '/new',
-  搜索: '/search',
-  标签: '/tags',
-  管理: '/admin',
-});
-
-const DEFAULT_MENU_JSON = JSON.stringify(DEFAULT_MENU);
-function defaultMenu() {return { ...DEFAULT_MENU };}
-
 /** 与 reference/styles.css 一致（内联，因 Worker 无静态 styles.css 路径） */
 const UBLOG_CSS = `
 @import url('https://static.zlybox.eu.org/sample/style.css');
@@ -32,8 +21,11 @@ article .content { margin-top: 0.75rem; }
 label { display: block; margin-top: 0.75rem; font-weight: 600; }
 textarea, input[type="text"], input[type="password"], input[type="number"] {width: 100%;resize: vertical;box-sizing: border-box;}
 textarea { min-height: 8rem; font-family: ui-monospace, monospace; font-size: 0.9rem; }
-button { margin-top: 0.5rem; margin-right: 0.5rem; padding: 0.4rem 0.9rem; cursor: pointer; }
 `;
+
+function defaultMenu() {
+  return { 首页: '/', 写作: '/new', 搜索: '/search', 标签: '/tags', 管理: '/admin' };
+}
 
 function buildMenuOptions(menuObj) {
   const m = menuObj && typeof menuObj === 'object' && Object.keys(menuObj).length ? menuObj : defaultMenu();
@@ -253,7 +245,7 @@ const DEFAULT_CONFIG = {
   footer:'',
   favicon: 'https://zhoulingyu.net/seologo.png',
   logo: 'https://zhoulingyu.net/seologo.png',
-  menu: DEFAULT_MENU_JSON,
+  menu: '{"首页":"/","写作":"/new","搜索":"/search","标签":"/tags","管理":"/admin"}',
   page404: '<b>404</b>',
   extra: '{}',
 };
@@ -302,13 +294,19 @@ async function loadGlobal(env) {
       footer: '',
       favicon: '',
       logo: '',
-      menu: defaultMenu(),
+      menu: { 首页: '/', 写作: '/new', 搜索: '/search', 标签: '/tags', 管理: '/admin' },
       page404: '<b>404</b>',
       extra: {},
     };
   }
   const g = { ...row };
-  g.menu = parseJsonField(row.menu, defaultMenu());
+  g.menu = parseJsonField(row.menu, {
+    首页: '/',
+    写作: '/new',
+    搜索: '/search',
+    标签: '/tags',
+    管理: '/admin',
+  });
   g.extra = parseJsonField(row.extra, {});
   delete g.page404;
   g.html404 = row.page404 ?? '<b>404</b>';
@@ -649,8 +647,7 @@ async function pageIndex(url, env) {
   const extraHead = '';
   const bodyHtml = `
 <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin-bottom:0.75rem;">
-  <label style="margin:0;display:flex;align-items:center;gap:0.35rem;font-weight:600;">
-    排序字段
+<label style="margin:.5rem 0;display:flex;align-items:center;gap:0.35rem;font-weight:600;">排序：
     <select id="sortField" style="font-weight:normal;">
       <option value="modified"${sort === 'modified' ? ' selected' : ''}>更新日期</option>
       <option value="created"${sort === 'created' ? ' selected' : ''}>发布日期</option>
@@ -658,7 +655,6 @@ async function pageIndex(url, env) {
     </select>
   </label>
   <label style="margin:0;display:flex;align-items:center;gap:0.35rem;font-weight:600;">
-    顺序
     <select id="sortOrder" style="font-weight:normal;">
       <option value="desc"${order === 'desc' ? ' selected' : ''}>从新到旧</option>
       <option value="asc"${order === 'asc' ? ' selected' : ''}>从旧到新</option>
@@ -805,7 +801,7 @@ async function pageSearch(url, env) {
 <form id="searchForm" style="width:100%; display: flex; gap:0.5rem; align-items: center;" action="/search" method="get">
   <input type="text" name="kw" id="kw" value="${escapeHtml(kw)}" placeholder="搜索文章..." style="flex:1;">
   <input type="hidden" name="tag" id="tagHidden" value="${escapeHtml(tag)}">
-  <button type="submit">搜索</button>
+  <button style="margin:0; padding:auto 0;" type="submit">搜索</button>
 </form>
 <p id="resultLine" style="margin:1rem 0 0.5rem;color:#666;"></p>
 <ul id="list" style="list-style:none;padding:0;margin:0;"></ul>
@@ -883,13 +879,13 @@ async function pageAdmin(request, env) {
   <label>标题</label><input type="text" id="title"  oninput="dirty=true;"/>
   <label>关于</label><textarea id="about" oninput="dirty=true;"></textarea>
   <label>SEO 关键词</label><input type="text" id="seo"  oninput="dirty=true;"/>
-  <label>Header HTML</label><textarea id="header" oninput="dirty=true;"></textarea>
-  <label>Comment HTML <p style='color:gray; font-size:small'>了解如何集成<a href="https://valine.js.org/quickstart.html">Valine</a></p></label>
+  <label>页头 HTML</label><textarea id="header" oninput="dirty=true;"></textarea>
+  <label>评论引擎 HTML<p style='color:gray; font-size:small'>了解如何集成<a href="https://valine.js.org/quickstart.html">Valine</a></p></label>
   <textarea id="comment" oninput="dirty=true;"></textarea>
-  <label>Footer HTML</label><textarea id="footer" oninput="dirty=true;"></textarea>
+  <label>页脚 HTML</label><textarea id="footer" oninput="dirty=true;"></textarea>
   <label>Favicon URL</label><input type="text" id="favicon"  oninput="dirty=true;"/>
-  <label>Logo URL</label><input type="text" id="logo"  oninput="dirty=true;"/>
-  <label>Menu (JSON)</label><textarea id="menu" oninput="dirty=true;"></textarea>
+  <label>网站图标 (URL)</label><input type="text" id="logo"  oninput="dirty=true;"/>
+  <label>菜单 (JSON)</label><textarea id="menu" oninput="dirty=true;"></textarea>
   <label>404页</label><textarea id="page404" oninput="dirty=true;"></textarea>
   <label>额外字段 (JSON)</label><textarea id="extra" oninput="dirty=true;"></textarea>
   <p style='color:gray;'>若更改未见效，可能需要<a href='https://developers.cloudflare.com/cache/how-to/purge-cache/'>清除Cloudflare对应域名的cache</a></p>
