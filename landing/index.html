@@ -16,12 +16,46 @@
     <header class="site-header">
       <div class="container nav-wrap">
         <a class="logo" href="#top">uBlog</a>
-        <nav class="nav-links">
+        <nav
+          class="nav-links"
+          id="primary-nav"
+          aria-label="页面导航"
+        >
           <a href="#features">特性</a>
           <a href="#architecture">架构</a>
           <a href="#api">API</a>
           <a href="#deploy">部署</a>
         </nav>
+        <div class="nav-tools">
+          <a
+            class="nav-github"
+            href="https://github.com/xolyn/ublog"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              class="nav-github__badge"
+              src="https://img.shields.io/github/stars/xolyn/ublog"
+              alt="GitHub"
+              width="92"
+              height="20"
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+          <button
+            type="button"
+            class="nav-toggle"
+            id="navToggle"
+            aria-expanded="false"
+            aria-controls="primary-nav"
+            aria-label="展开或收起导航菜单"
+          >
+            <span class="nav-toggle__bar" aria-hidden="true"></span>
+            <span class="nav-toggle__bar" aria-hidden="true"></span>
+            <span class="nav-toggle__bar" aria-hidden="true"></span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -38,20 +72,20 @@
             基于Cloudflare Worker + D1，面向个人开发者与小团队，的极致轻量、优雅、可定制、低维护成本的博客系统。
           </p>
           <div class="hero-actions" data-reveal>
-            <a class="btn btn-primary" href="#features">查看产品特性</a>
-            <a class="btn btn-ghost" href="#api">浏览 API 设计</a>
+            <a class="btn btn-primary" href="https://ublog.zlybox.eu.org">查看demo</a>
+            <a class="btn btn-ghost" href="#features">了解更多</a>
           </div>
           <div class="kpis" data-reveal>
             <article>
-              <h3>2</h3>
+              <h3 style="font-size: xx-large;">2</h3>
               <p>仅两张核心数据表</p>
             </article>
             <article>
-              <h3>&lt;50K</h3>
+              <h3 style="font-size: xx-large;">&lt;50KiB</h3>
               <p>前后端总代码体量</p>
             </article>
             <article>
-              <h3>0 成本</h3>
+              <h3 style="font-size: xx-large;">0 成本</h3>
               <p>新手友好部署路径</p>
             </article>
           </div>
@@ -61,7 +95,7 @@
       <section id="features" class="section-light">
         <div class="container">
           <p class="section-label" data-reveal>核心特性</p>
-          <h2 data-reveal>从写作到发布，一套闭环能力</h2>
+          <h2 data-reveal>从写作到发布，全套能力闭环</h2>
           <div class="feature-grid">
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">api</span>
@@ -75,13 +109,13 @@
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">forum</span>
-              <h3>可扩展的评论系统</h3>
-              <p>通过配置字段接入 Valine 或 Waline 等评论方案，保持灵活与可替换性。</p>
+              <h3>评论系统集成</h3>
+              <p>通过自定义字段无缝接入 Valine 或 Waline 等评论方案，保持灵活与可替换性。</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
               <h3>WYSIWYG沉浸式写作</h3>
-              <p>编辑体验聚焦内容本身，支持 Markdown 工作流与无干扰创作。</p>
+              <p>预制EasyMDE，编辑体验聚焦内容本身，支持 Markdown 无干扰创作。</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">web</span>
@@ -89,9 +123,9 @@
               <p>全站关键区域可按业务注入自定义header footer，404页面，视觉风格自由扩展。</p>
             </article>
             <article class="feature-card" data-reveal>
-              <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-              <h3>方便且多样的管理员设置</h3>
-              <p>通过管理页即可维护标题、SEO、菜单、评论区与扩展配置。</p>
+              <span class="material-symbols-outlined" aria-hidden="true">rebase_edit</span>
+              <h3>模块化设计</h3>
+              <p>高度模块化的函数式开源源码，便于任何人根据需求扩展与修改。</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
@@ -101,12 +135,12 @@
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">nest_eco_leaf</span>
               <h3>极致轻量</h3>
-              <p>仅两张表，&lt;50K的前+后端代码，结构清晰、维护成本低</p>
+              <p>仅两张表，&lt;50KiB的前+后端代码，结构清晰、维护成本低</p>
             </article>
             <article class="feature-card" data-reveal>
               <span class="material-symbols-outlined" aria-hidden="true">deployed_code</span>
-              <h3>极简但功能齐全</h3>
-              <p>博客CMS覆盖内容管理的核心路径，避免臃肿，保证体验与效率平衡。</p>
+              <h3>齐全且多样的功能设置</h3>
+              <p>排序，标签，搜索，以及方便地管理标题、SEO、菜单、评论区与扩展配置。</p>
             </article>
           </div>
         </div>
@@ -164,7 +198,10 @@
             </article>
           </div>
 
-            <p class="pill" style="padding:1rem 1.5rem; cursor: pointer; border:1px solid #eee; margin-top: 1rem;" onclick="window.location.href='https://github.com/xolyn/ublog/blob/main/readme.md#api'" style="cursor: pointer;">
+            <p class="pill"  
+            onmouseenter="this.style.filter='brightness(.7)'"
+            onmouseleave="this.style.filter='brightness(1)'"
+            style="transition: .3s; padding:1rem 1.5rem; cursor: pointer; border:1px solid #eee; margin-top: 1rem;" onclick="window.location.href='https://github.com/xolyn/ublog/blob/main/readme.md#api'" style="cursor: pointer;">
               <span style="color: rgb(50, 0, 151)" class="material-symbols-outlined" aria-hidden="true">book</span>
               查看完整API文档 &rarr;
             </p>  
@@ -180,29 +217,31 @@
             <article data-reveal>
               <span>01</span>
               <div>
-                <h3>绑定 D1 数据库</h3>
-                <p>在 wrangler.toml 中配置 <code>binding = "DB"</code>。</p>
+                <h3>一件部署</h3>
+                <p>粘贴 <code>worker.js</code> 到 Worker 代码中，点击部署</p>
               </div>
             </article>
+
             <article data-reveal>
               <span>02</span>
               <div>
-                <h3>初始化 schema</h3>
-                <p>执行建表 SQL，自动注入默认配置。</p>
+                <h3>绑定 Cloudflare D1 数据库</h3>
+                <p>创建并通过 <code>binding = "DB"</code> 连接到D1数据库，代码自动初始化数据库表。</p>
               </div>
             </article>
+
             <article data-reveal>
               <span>03</span>
               <div>
                 <h3>配置环境变量</h3>
-                <p>设置 <code>USERNAME</code>、<code>PASSWORD</code>，可选 <code>API_TOKEN</code>。</p>
+                <p>设置 <code>USERNAME</code>、<code>PASSWORD</code>等凭证环境变量。</p>
               </div>
             </article>
             <article data-reveal>
               <span>04</span>
               <div>
                 <h3>发布并开始写作</h3>
-                <p>直接进入管理页和写作页，完成站点配置与内容生产。</p>
+                <p>通过凭证直接进入管理页和写作页，完成站点配置与内容生产。</p>
               </div>
             </article>
           </div>
