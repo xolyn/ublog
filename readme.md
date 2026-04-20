@@ -106,6 +106,10 @@
 | `/purge` | 返回 401 + `www-authenticate`，配合错误账号请求以刷新凭证缓存 |
 
 ---
+# 性能
+uBlog 的性能取决于 Cloudflare Workers 以及 D1 的性能。在Cloudflare D1 免费层（瓶颈）中，每天可读取 5000000 行的内容，虽然没有缓存，但理应完全满足个人博客的需求。
+
+---
 
 # API
 
@@ -129,10 +133,7 @@
 ### `GET /api/docs`
 
 - **作用**：HTTP **302** 重定向到在线文档。
-- **目标 URL**：环境变量 `DOCS_URL`；若未设置，默认为  
-  `https://github.com/zhoulingyu/ublog-cf/blob/main/design.md#api`  
-  （可将本仓库 `readme.md` 的 `# API` 段作为你自己的文档替换该默认值。）
-
+- **目标 URL**：环境变量 `DOCS_URL`；若未设置，默认为该项目的readme.md 文件中的 # API 部分 
 ---
 
 ### `GET /api/posts`

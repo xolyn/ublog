@@ -18,8 +18,8 @@ main::before{content: attr(id);font-weight: bold;display: block;font-size: xx-la
 .tag-cloud a {padding: 0.2rem 0.6rem;background: #eee;border-radius: 4px;text-decoration: none;color: inherit;}
 .tag-cloud a:hover { background: #ddd; }
 article .content { margin-top: 0.75rem; }
-label { display: block; margin-top: 0.75rem; font-weight: 600; }
-textarea, input[type="text"], input[type="password"], input[type="number"] {width: 100%;resize: vertical;box-sizing: border-box;}
+label { display: block; margin-top: 0.75rem; font-weight: 600; font-size: large }
+textarea, input[type="text"], input[type="password"], input[type="number"], input[type="datetime-local"] {width: 100%;resize: vertical;box-sizing: border-box;}
 textarea { min-height: 8rem; font-family: ui-monospace, monospace; font-size: 0.9rem; }
 `;
 
@@ -71,27 +71,6 @@ ${comment}
 <footer>
 ${footerExtra}
 </footer>
-<script>
-(function(){
-  function normPath(u){
-    var p = (u || '/').replace(/\\.html?$/i,'');
-    if(!p || p === '/') return '/';
-    if(p === '/index') return '/';
-    return p;
-  }
-  var sel = document.getElementById('ublog-nav-menu');
-  if(!sel) return;
-  var path = normPath(location.pathname);
-  for(var i=0;i<sel.options.length;i++){
-    var v = sel.options[i].value;
-    if(!v) continue;
-    try {
-      var p = normPath(new URL(v, location.origin).pathname);
-      if(p === path){ sel.selectedIndex = i; break; }
-    } catch(e){}
-  }
-})();
-</script>
 </body>
 </html>`;
 }
@@ -349,14 +328,30 @@ async function apiDocs(request, env) {
   return Response.redirect(url, 302);
 }
 
-async function apiGetPosts(url, env) {
+async function apiGetPosts(url, env, request) {
   const sp = url.searchParams;
-  const kw = sp.get('kw')?.trim() || '';
-  const tag = sp.get('tag')?.trim() || '';
   const sort = (sp.get('sort') || 'modified').toLowerCase();
   const order = (sp.get('order') || 'desc').toLowerCase() === 'asc' ? 'ASC' : 'DESC';
-  const limit = Math.min(Math.max(parseInt(sp.get('limit') || '20', 10) || 20, 1), 100);
   const offset = Math.max(parseInt(sp.get('offset') || '0', 10) || 0, 0);
+
+  let orderSql = 'ORDER BY modified DESC';
+  if (sort === 'modified') orderSql = `ORDER BY modified ${order}`;
+  else if (sort === 'created') orderSql = `ORDER BY created ${order}`;
+  else if (sort === 'random') orderSql = 'ORDER BY RANDOM()';
+
+  if (sp.get('admin') === '1') {
+    if (!verifyAdmin(request, env)) {
+      return jsonResponse({ error: 'unauthorized' }, { status: 401 });
+    }
+    const limit = Math.min(Math.max(parseInt(sp.get('limit') || '500', 10) || 500, 1), 500);
+    const sql = `SELECT id, title, author, created, modified, tags, status FROM posts WHERE status != 2 ${orderSql} LIMIT ? OFFSET ?`;
+    const { results } = await env.DB.prepare(sql).bind(limit, offset).all();
+    return jsonResponse(results || []);
+  }
+
+  const kw = sp.get('kw')?.trim() || '';
+  const tag = sp.get('tag')?.trim() || '';
+  const limit = Math.min(Math.max(parseInt(sp.get('limit') || '20', 10) || 20, 1), 100);
 
   const conds = ['status = 0'];
   const binds = [];
@@ -369,11 +364,6 @@ async function apiGetPosts(url, env) {
     binds.push(`%${tag}%`);
   }
   const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
-
-  let orderSql = 'ORDER BY modified DESC';
-  if (sort === 'modified') orderSql = `ORDER BY modified ${order}`;
-  else if (sort === 'created') orderSql = `ORDER BY created ${order}`;
-  else if (sort === 'random') orderSql = 'ORDER BY RANDOM()';
 
   const sql = `SELECT id, title, author, created, modified, tags FROM posts ${where} ${orderSql} LIMIT ? OFFSET ?`;
   binds.push(limit, offset);
@@ -714,7 +704,7 @@ async function pageIndex(url, env) {
   return textResponse(pageShell({ title: g.title, global: g, mainId: '文章', bodyHtml, extraHead }));
 }
 
-async function pagePost(url, env) {
+async function pagePost(request, url, env) {
   const g = await loadGlobal(env);
   const id = url.searchParams.get('id');
   if (!id) {
@@ -728,6 +718,15 @@ async function pagePost(url, env) {
       { status: 404 },
     );
   }
+  const showAdminCreated = verifyAdmin(request, env);
+  const adminAside = showAdminCreated
+    ? `
+  <aside id="admin-created-panel" style="margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:0.5rem;background:#fafafa;">
+    <label>创建时间（管理员）</label>
+    <input type="datetime-local" id="adminCreatedAt" />
+    <button type="button" id="saveAdminCreated">保存创建时间</button>
+  </aside>`
+    : '';
   const extraHead = `<script src="https://fastly.jsdelivr.net/npm/marked/marked.min.js"></script>`;
   const bodyHtml = `
   <article>
@@ -736,9 +735,24 @@ async function pagePost(url, env) {
     <div class="tag-cloud" id="post-tags" style="margin:0 0 1rem;"></div>
     <hr><div class="content" id="content"></div><hr>
   </article>
+  ${adminAside}
   <script>
     (function(){
       var id = ${JSON.stringify(id)};
+      function isoToDatetimeLocal(iso){
+        if(!iso) return '';
+        var d = new Date(iso);
+        if(isNaN(d.getTime())) return '';
+        var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+        var h=String(d.getHours()).padStart(2,'0'), min=String(d.getMinutes()).padStart(2,'0');
+        return y+'-'+m+'-'+day+'T'+h+':'+min;
+      }
+      function localDatetimeToIso(v){
+        if(!v || !String(v).trim()) return null;
+        var d = new Date(v);
+        if(isNaN(d.getTime())) return null;
+        return d.toISOString();
+      }
       function fmtIso(iso){
         if(!iso) return '';
         try {
@@ -770,6 +784,8 @@ async function pagePost(url, env) {
         document.getElementById('meta').textContent = (data.author||'') + ' · 创建于 ' + fmtIso(data.created) + ' · 更新于 ' + fmtIso(data.modified);
         renderTags(data.tags);
         document.getElementById('content').innerHTML = marked.parse(data.content || '');
+        var ac = document.getElementById('adminCreatedAt');
+        if(ac) ac.value = isoToDatetimeLocal(data.created||'');
       }
       function loop(){
         fetchPost(null).then(function(res){
@@ -787,6 +803,28 @@ async function pagePost(url, env) {
         });
       }
       loop();
+      var saveBtn = document.getElementById('saveAdminCreated');
+      if(saveBtn){
+        saveBtn.onclick = function(){
+          var u = prompt('管理员用户名:');
+          var p = prompt('密码:');
+          if(u===null||p===null) return;
+          var h = 'Basic ' + btoa(u + ':' + p);
+          var inp = document.getElementById('adminCreatedAt');
+          var createdIso = inp && inp.value.trim() ? localDatetimeToIso(inp.value) : null;
+          if(!createdIso){ alert('请选择创建时间'); return; }
+          var pid = parseInt(id, 10);
+          if(Number.isNaN(pid)){ alert('无效 id'); return; }
+          fetch('/api/post', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': h },
+            body: JSON.stringify({ id: pid, created: createdIso })
+          }).then(function(r){ return r.json(); }).then(function(j){
+            alert(JSON.stringify(j));
+            if(j.ok) location.reload();
+          });
+        };
+      }
     })();
   </script>`;
   return textResponse(pageShell({ title: g.title, global: g, mainId: '', bodyHtml, extraHead, addComment: true })); // manually override: dont show "文章" before main content to avoid confusion 
@@ -874,8 +912,9 @@ async function pageAdmin(request, env) {
   }
   const g = await loadGlobal(env);
   const cfg = globalToConfigJson(g);
+  const apiKeyB64 = btoa(`${String(env.USERNAME ?? '')}:${String(env.PASSWORD ?? '')}`);
   const bodyHtml = `
-  <p style="color:#666;margin:0 0 1rem;">修改后点保存。数据删除请用 API 或 D1。</p>
+  <p style="color:#666;margin:0 0 1rem;">修改后点保存。数据删除请用 API 或 D1。<br>若更改未见效，可能需要<a href='https://developers.cloudflare.com/cache/how-to/purge-cache/'>清除Cloudflare对应域名的cache</a></p>
   <label>标题</label><input type="text" id="title"  oninput="dirty=true;"/>
   <label>关于</label><textarea id="about" oninput="dirty=true;"></textarea>
   <label>SEO 关键词</label><input type="text" id="seo"  oninput="dirty=true;"/>
@@ -888,10 +927,15 @@ async function pageAdmin(request, env) {
   <label>菜单 (JSON)</label><textarea id="menu" oninput="dirty=true;"></textarea>
   <label>404页</label><textarea id="page404" oninput="dirty=true;"></textarea>
   <label>额外字段 (JSON)</label><textarea id="extra" oninput="dirty=true;"></textarea>
-  <p style='color:gray;'>若更改未见效，可能需要<a href='https://developers.cloudflare.com/cache/how-to/purge-cache/'>清除Cloudflare对应域名的cache</a></p>
-  <button type="button" id="save">保存</button>
+  <label style="color:red;">API Key与鉴权</label><p>所有修改相关的API请求都需要使用 Basic Auth认证，可以在环境变量中调整。请注意： 只要API在浏览器里调用，任何人都有能力复现调用。</p>
+  <p>点击查看目前的 APIKey，你在下次访问该网站时需要重新点击。</p>
+  <button type="button" id="showApiKey">查看APIKey</button>
+  <div id="apiKey" style="display:none; margin: .5rem 0; border-radius:5.43px; width:100%; background-color:#ddd; padding: .25rem .5rem; overflow-x: auto; font-family: monospace;"></div>
+  <hr>
+  <button type="button" id="save" style="background-color: green; color: white; border-radius: 6.54px; width:fit-content;">保存</button>
   <button type="button" id="reload" onclick="location.reload();">重新加载</button>
   <script type="application/json" id="ublog-admin-cfg">${jsonForInlineHtml(cfg)}</script>
+  <script type="application/json" id="ublog-admin-apikey">${jsonForInlineHtml(apiKeyB64)}</script>
   <script> window.addEventListener("beforeunload", (e) => {if(dirty){e.preventDefault();e.returnValue = "";}});</script>
   <script>
   var dirty = false;
@@ -911,6 +955,11 @@ async function pageAdmin(request, env) {
         document.getElementById('extra').value = typeof cfg.extra === 'object' ? JSON.stringify(cfg.extra||{}, null, 2) : String(cfg.extra||'');
       }
       fill();
+      document.getElementById('showApiKey').onclick = function(){
+        var v = JSON.parse(document.getElementById('ublog-admin-apikey').textContent);
+        document.getElementById('apiKey').textContent = v;
+        document.getElementById('apiKey').style.display = 'block';
+      };
       function authHeader(){
         var u = prompt('管理员用户名（将用于 Basic 授权头）:');
         var p = prompt('密码:');
@@ -952,7 +1001,14 @@ function buildEditorBodyHtml(kind, postId) {
   const saveLabel = kind === 'new' ? '发布' : '保存';
   const isNewJs = JSON.stringify(kind === 'new');
   const urlIdJs = postId == null ? 'null' : JSON.stringify(String(postId));
-  return `
+  const articleSelectBlock =
+    kind === 'edit'
+      ? `
+  <label for="editArticleSelect">选择文章</label>
+  <select id="editArticleSelect"><option value="">加载中…</option></select>
+`
+      : '';
+  return `${articleSelectBlock}
   <label>标题</label><input type="text" id="title" />
   <label>作者</label><input type="text" id="author" />
   <label>正文 (Markdown)</label><textarea id="content"></textarea>
@@ -961,6 +1017,7 @@ function buildEditorBodyHtml(kind, postId) {
   <label><input type="checkbox" id="changeKey" /> 修改访问密码</label>
   <input type="password" id="postKey" placeholder="新密码，留空则取消上锁" disabled />
   <label>状态（0 公开 / 1 草稿）</label><input type="number" id="status" value="0" min="0" max="1" />
+  <label>创建时间</label><input type="datetime-local" id="created" />
   <button type="button" id="save">${saveLabel}</button>
   <script>
     (function(){
@@ -976,6 +1033,24 @@ function buildEditorBodyHtml(kind, postId) {
       document.getElementById('changeKey').onchange = function(){
         document.getElementById('postKey').disabled = !this.checked;
       };
+      if(isNewPage){
+        var c0 = document.getElementById('created');
+        if(c0) c0.value = isoToDatetimeLocal(new Date().toISOString());
+      }
+      function isoToDatetimeLocal(iso){
+        if(!iso) return '';
+        var d = new Date(iso);
+        if(isNaN(d.getTime())) return '';
+        var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+        var h=String(d.getHours()).padStart(2,'0'), min=String(d.getMinutes()).padStart(2,'0');
+        return y+'-'+m+'-'+day+'T'+h+':'+min;
+      }
+      function localDatetimeToIso(v){
+        if(!v || !String(v).trim()) return null;
+        var d = new Date(v);
+        if(isNaN(d.getTime())) return null;
+        return d.toISOString();
+      }
       function authHeader(){
         var u = prompt('管理员用户名:');
         var p = prompt('密码:');
@@ -985,6 +1060,57 @@ function buildEditorBodyHtml(kind, postId) {
       function goNewArticle(msg){
         if(msg) alert(msg);
         location.replace('/new');
+      }
+      function syncArticleSelect(){
+        if(isNewPage) return;
+        var sel = document.getElementById('editArticleSelect');
+        if(!sel) return;
+        var cur = String(urlId);
+        fetch('/api/posts?admin=1&limit=500&sort=modified&order=desc').then(function(r){ return r.json(); }).then(function(posts){
+          if(!Array.isArray(posts)) posts = [];
+          sel.innerHTML = '';
+          var ids = {};
+          var published = [];
+          var drafts = [];
+          posts.forEach(function(p){
+            if(Number(p.status) === 1) drafts.push(p);
+            else published.push(p);
+          });
+          function addOption(og, p){
+            var idStr = String(p.id);
+            ids[idStr] = true;
+            var opt = document.createElement('option');
+            opt.value = idStr;
+            opt.textContent = (p.title != null && String(p.title).trim()) ? String(p.title).trim() : ('#' + idStr);
+            og.appendChild(opt);
+          }
+          var ogPub = document.createElement('optgroup');
+          ogPub.label = '已发布';
+          var ogDraft = document.createElement('optgroup');
+          ogDraft.label = '草稿';
+          published.forEach(function(p){ addOption(ogPub, p); });
+          drafts.forEach(function(p){ addOption(ogDraft, p); });
+          sel.appendChild(ogPub);
+          sel.appendChild(ogDraft);
+          if(!ids[cur]){
+            var opt = document.createElement('option');
+            opt.value = cur;
+            opt.textContent = '#' + cur + '（当前）';
+            sel.appendChild(opt);
+          }
+          sel.value = cur;
+          sel.onchange = function(){
+            if(!this.value || this.value === cur) return;
+            location.href = '/edit?id=' + encodeURIComponent(this.value);
+          };
+        }).catch(function(){
+          sel.innerHTML = '';
+          var opt = document.createElement('option');
+          opt.value = cur;
+          opt.textContent = '#' + cur;
+          sel.appendChild(opt);
+          sel.value = cur;
+        });
       }
       function load(){
         if(isNewPage || !urlId){ editingId = null; return; }
@@ -1003,6 +1129,8 @@ function buildEditorBodyHtml(kind, postId) {
           easymde.value(data.content || '');
           document.getElementById('tags').value = data.tags||'';
           document.getElementById('allowComments').checked = !!data.comments;
+          var cEl = document.getElementById('created');
+          if(cEl) cEl.value = isoToDatetimeLocal(data.created||'');
           editingId = data.id != null ? String(data.id) : editingId;
         }
         fp(null, null).then(function(res){
@@ -1031,7 +1159,10 @@ function buildEditorBodyHtml(kind, postId) {
           goNewArticle('无法加载文章。已转到新建页。');
         });
       }
-      if(!isNewPage){ load(); }
+      if(!isNewPage){
+        syncArticleSelect();
+        load();
+      }
       document.getElementById('save').onclick = function(){
         var h = authHeader();
         if(!h) return;
@@ -1046,6 +1177,9 @@ function buildEditorBodyHtml(kind, postId) {
         if(document.getElementById('changeKey').checked){
           payload.key = document.getElementById('postKey').value;
         }
+        var cEl = document.getElementById('created');
+        var createdIso = cEl && cEl.value.trim() ? localDatetimeToIso(cEl.value) : null;
+        if(createdIso) payload.created = createdIso;
         var method, apiUrl;
         if(isNewPage){
           method = 'POST';
@@ -1167,7 +1301,7 @@ export default {
       await ensureDbSchema(env);
 
       if (path === '/api/docs' && method === 'GET') return apiDocs(request, env);
-      if (path === '/api/posts' && method === 'GET') return apiGetPosts(url, env);
+      if (path === '/api/posts' && method === 'GET') return apiGetPosts(url, env, request);
       if (path === '/api/tags' && method === 'GET') return apiGetTags(url, env);
       if (path === '/api/config' && method === 'GET') return apiGetConfig(env);
       if (path === '/api/config' && method === 'PUT') return apiPutConfig(request, env);
@@ -1177,7 +1311,7 @@ export default {
       if (path === '/api/post' && method === 'PUT') return apiPutPost(request, env);
       if (path === '/api/post' && method === 'DELETE') return apiDeletePost(request, env);
 
-      if (path === '/post' && method === 'GET') return pagePost(url, env);
+      if (path === '/post' && method === 'GET') return pagePost(request, url, env);
 
       if (path === '/' || path === '/index') return pageIndex(url, env);
       if (path === '/search') return pageSearch(url, env);
