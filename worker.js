@@ -21,6 +21,7 @@ article .content { margin-top: 0.75rem; }
 label { display: block; margin-top: 0.75rem; font-weight: 600; font-size: large }
 textarea, input[type="text"], input[type="password"], input[type="number"], input[type="datetime-local"] {width: 100%;resize: vertical;box-sizing: border-box;}
 textarea { min-height: 8rem; font-family: ui-monospace, monospace; font-size: 0.9rem; }
+#editArticleSelect{width:100%}
 `;
 
 function defaultMenu() {
@@ -1011,13 +1012,13 @@ function buildEditorBodyHtml(kind, postId) {
   return `${articleSelectBlock}
   <label>标题</label><input type="text" id="title" />
   <label>作者</label><input type="text" id="author" />
+  <label>创建时间</label><input type="datetime-local" id="created" />
   <label>正文 (Markdown)</label><textarea id="content"></textarea>
   <label>标签（逗号分隔）</label><input type="text" id="tags" />
   <label><input type="checkbox" id="allowComments" checked /> 允许评论</label>
   <label><input type="checkbox" id="changeKey" /> 修改访问密码</label>
   <input type="password" id="postKey" placeholder="新密码，留空则取消上锁" disabled />
   <label>状态（0 公开 / 1 草稿）</label><input type="number" id="status" value="0" min="0" max="1" />
-  <label>创建时间</label><input type="datetime-local" id="created" />
   <button type="button" id="save">${saveLabel}</button>
   <script>
     (function(){
