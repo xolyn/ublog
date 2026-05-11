@@ -57,23 +57,23 @@ function pageShell({
 }) {
   const favicon = g.favicon
     ? `<link rel="icon" href="${escapeHtml(g.favicon)}">`
-    : '';
+    : "";
   const menuOpts = buildMenuOptions(g.menu);
-  const comment = addComment ? (g.comment || '') : '';
-  const footerExtra = g.footer || '';
+  const comment = addComment ? g.comment || "" : "";
+  const footerExtra = g.footer || "";
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${escapeHtml(title)}</title>
-<meta name="description" content="${escapeHtml(g.about || '')}">
-<meta name="keywords" content="${escapeHtml(g.seo || '')}">
+<meta name="description" content="${escapeHtml(g.about || "")}">
+<meta name="keywords" content="${escapeHtml(g.seo || "")}">
 ${favicon}
 <style>
 ${UBLOG_CSS}
 </style>
-${g.header || ''}
+${g.header || ""}
 ${extraHead}
 </head>
 <body>
@@ -98,23 +98,23 @@ ${footerExtra}
 // ---------- 工具 ----------
 
 function escapeHtml(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 /** 嵌入 HTML 的 <script> 内时，避免 comment 等字段里的 </script> 截断标签 */
 function jsonForInlineHtml(obj) {
-  return JSON.stringify(obj).replace(/</g, '\\u003c');
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
 }
 
 function jsonResponse(data, init = {}) {
   return new Response(JSON.stringify(data), {
     ...init,
     headers: {
-      'content-type': 'application/json; charset=utf-8',
+      "content-type": "application/json; charset=utf-8",
       ...corsHeaders(),
       ...init.headers,
     },
@@ -125,7 +125,7 @@ function textResponse(html, init = {}) {
   return new Response(html, {
     ...init,
     headers: {
-      'content-type': 'text/html; charset=utf-8',
+      "content-type": "text/html; charset=utf-8",
       ...corsHeaders(),
       ...init.headers,
     },
@@ -134,25 +134,27 @@ function textResponse(html, init = {}) {
 
 function corsHeaders() {
   return {
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'access-control-allow-headers': 'Content-Type, Authorization',
-    'access-control-max-age': '86400',
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "access-control-allow-headers": "Content-Type, Authorization",
+    "access-control-max-age": "86400",
   };
 }
 
 async function sha256Hex(text) {
   const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return [...new Uint8Array(buf)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 function parseBasicAuth(request) {
-  const h = request.headers.get('authorization');
-  if (!h || !h.toLowerCase().startsWith('basic ')) return null;
+  const h = request.headers.get("authorization");
+  if (!h || !h.toLowerCase().startsWith("basic ")) return null;
   try {
     const raw = atob(h.slice(6).trim());
-    const i = raw.indexOf(':');
+    const i = raw.indexOf(":");
     if (i < 0) return null;
     return { user: raw.slice(0, i), pass: raw.slice(i + 1) };
   } catch {
@@ -162,8 +164,8 @@ function parseBasicAuth(request) {
 
 function verifyBearer(request, env) {
   if (!env.API_TOKEN) return false;
-  const h = request.headers.get('authorization');
-  if (!h || !h.toLowerCase().startsWith('bearer ')) return false;
+  const h = request.headers.get("authorization");
+  if (!h || !h.toLowerCase().startsWith("bearer ")) return false;
   const token = h.slice(7).trim();
   return token === env.API_TOKEN;
 }
@@ -185,8 +187,8 @@ function requireWriteAuth(request, env) {
 }
 
 async function readJsonBody(request) {
-  const ct = request.headers.get('content-type') || '';
-  if (!ct.includes('application/json')) return {};
+  const ct = request.headers.get("content-type") || "";
+  if (!ct.includes("application/json")) return {};
   try {
     return await request.json();
   } catch {
@@ -196,9 +198,9 @@ async function readJsonBody(request) {
 
 function normalizePath(pathname) {
   let p = pathname;
-  if (p.endsWith('/') && p.length > 1) p = p.slice(0, -1);
-  if (p.endsWith('.html')) p = p.slice(0, -5);
-  return p || '/';
+  if (p.endsWith("/") && p.length > 1) p = p.slice(0, -1);
+  if (p.endsWith(".html")) p = p.slice(0, -5);
+  return p || "/";
 }
 
 /** 与 schema.sql 保持一致；空库首次请求时自动建表 */
@@ -236,22 +238,25 @@ const DDL_POSTS = `CREATE TABLE IF NOT EXISTS posts (
 )`;
 
 const DEFAULT_CONFIG = {
-  title: 'uBlog',
-  about: 'uBlog is a simple, extreme lightweight yet elegant blog system built with Cloudflare Worker and D1.',
-  seo: 'uBlog, Cloudflare Worker, D1',
-  header: '',
-  comment: '',
-  footer:'',
-  favicon: 'https://zhoulingyu.net/seologo.png',
-  logo: 'https://zhoulingyu.net/seologo.png',
+  title: "uBlog",
+  about:
+    "uBlog is a simple, extreme lightweight yet elegant blog system built with Cloudflare Worker and D1.",
+  seo: "uBlog, Cloudflare Worker, D1",
+  header: "",
+  comment: "",
+  footer: "",
+  favicon: "https://zhoulingyu.net/seologo.png",
+  logo: "https://zhoulingyu.net/seologo.png",
   menu: '{"首页":"/","写作":"/new","搜索":"/search","标签":"/tags","管理":"/admin"}',
-  page404: '<b>404</b>',
-  extra: '{}',
+  page404: "<b>404</b>",
+  extra: "{}",
 };
 
 async function ensureDbSchema(env) {
   if (!env.DB) {
-    throw new Error('D1 binding missing: set [[d1_databases]] binding = "DB" in wrangler.toml');
+    throw new Error(
+      'D1 binding missing: set [[d1_databases]] binding = "DB" in wrangler.toml',
+    );
   }
   if (globalThis.__ublog_d1_schema_ok) return;
   await env.DB.batch([env.DB.prepare(DDL_CONFIG), env.DB.prepare(DDL_POSTS)]);
@@ -281,40 +286,47 @@ async function ensureDbSchema(env) {
 
 async function loadGlobal(env) {
   const row = await env.DB.prepare(
-    'SELECT title, about, seo, header, comment, footer, favicon, logo, menu, page404, extra FROM config WHERE id = 1',
+    "SELECT title, about, seo, header, comment, footer, favicon, logo, menu, page404, extra FROM config WHERE id = 1",
   ).first();
   if (!row) {
     return {
-      title: 'uBlog',
-      about: 'uBlog is a simple and elegant blog system built with Cloudflare Worker and D1.',
-      seo: 'uBlog, Cloudflare Worker, D1',
-      header: '',
-      comment: '',
-      footer: '',
-      favicon: '',
-      logo: '',
-      menu: { 首页: '/', 写作: '/new', 搜索: '/search', 标签: '/tags', 管理: '/admin' },
-      page404: '<b>404</b>',
+      title: "uBlog",
+      about:
+        "uBlog is a simple and elegant blog system built with Cloudflare Worker and D1.",
+      seo: "uBlog, Cloudflare Worker, D1",
+      header: "",
+      comment: "",
+      footer: "",
+      favicon: "",
+      logo: "",
+      menu: {
+        首页: "/",
+        写作: "/new",
+        搜索: "/search",
+        标签: "/tags",
+        管理: "/admin",
+      },
+      page404: "<b>404</b>",
       extra: {},
     };
   }
   const g = { ...row };
   g.menu = parseJsonField(row.menu, {
-    首页: '/',
-    写作: '/new',
-    搜索: '/search',
-    标签: '/tags',
-    管理: '/admin',
+    首页: "/",
+    写作: "/new",
+    搜索: "/search",
+    标签: "/tags",
+    管理: "/admin",
   });
   g.extra = parseJsonField(row.extra, {});
   delete g.page404;
-  g.html404 = row.page404 ?? '<b>404</b>';
+  g.html404 = row.page404 ?? "<b>404</b>";
   return g;
 }
 
 function parseJsonField(raw, fallback) {
-  if (raw == null || raw === '') return fallback;
-  if (typeof raw === 'object') return raw;
+  if (raw == null || raw === "") return fallback;
+  if (typeof raw === "object") return raw;
   try {
     return JSON.parse(String(raw));
   } catch {
@@ -335,7 +347,7 @@ function globalToConfigJson(global) {
     menu: global.menu,
     404: global.html404,
     extra:
-      typeof global.extra === 'object' && global.extra !== null
+      typeof global.extra === "object" && global.extra !== null
         ? global.extra
         : parseJsonField(global.extra, {}),
   };
@@ -350,87 +362,99 @@ async function apiDocs(request, env) {
 
 async function apiGetPosts(url, env, request) {
   const sp = url.searchParams;
-  const sort = (sp.get('sort') || 'modified').toLowerCase();
-  const order = (sp.get('order') || 'desc').toLowerCase() === 'asc' ? 'ASC' : 'DESC';
-  const offset = Math.max(parseInt(sp.get('offset') || '0', 10) || 0, 0);
+  const sort = (sp.get("sort") || "modified").toLowerCase();
+  const order =
+    (sp.get("order") || "desc").toLowerCase() === "asc" ? "ASC" : "DESC";
+  const offset = Math.max(parseInt(sp.get("offset") || "0", 10) || 0, 0);
 
-  let orderSql = 'ORDER BY modified DESC';
-  if (sort === 'modified') orderSql = `ORDER BY modified ${order}`;
-  else if (sort === 'created') orderSql = `ORDER BY created ${order}`;
-  else if (sort === 'random') orderSql = 'ORDER BY RANDOM()';
+  let orderSql = "ORDER BY modified DESC";
+  if (sort === "modified") orderSql = `ORDER BY modified ${order}`;
+  else if (sort === "created") orderSql = `ORDER BY created ${order}`;
+  else if (sort === "random") orderSql = "ORDER BY RANDOM()";
 
-  if (sp.get('admin') === '1') {
+  if (sp.get("admin") === "1") {
     if (!verifyAdmin(request, env)) {
-      return jsonResponse({ error: 'unauthorized' }, { status: 401 });
+      return jsonResponse({ error: "unauthorized" }, { status: 401 });
     }
-    const limit = Math.min(Math.max(parseInt(sp.get('limit') || '500', 10) || 500, 1), 500);
+    const limit = Math.min(
+      Math.max(parseInt(sp.get("limit") || "500", 10) || 500, 1),
+      500,
+    );
     const sql = `SELECT id, title, author, created, modified, tags, status FROM posts WHERE status != 2 ${orderSql} LIMIT ? OFFSET ?`;
     const { results } = await env.DB.prepare(sql).bind(limit, offset).all();
     return jsonResponse(results || []);
   }
 
-  const kw = sp.get('kw')?.trim() || '';
-  const tag = sp.get('tag')?.trim() || '';
-  const limit = Math.min(Math.max(parseInt(sp.get('limit') || '20', 10) || 20, 1), 100);
+  const kw = sp.get("kw")?.trim() || "";
+  const tag = sp.get("tag")?.trim() || "";
+  const limit = Math.min(
+    Math.max(parseInt(sp.get("limit") || "20", 10) || 20, 1),
+    100,
+  );
 
-  const conds = ['status = 0'];
+  const conds = ["status = 0"];
   const binds = [];
   if (kw) {
     conds.push("(title || '\n' || content) LIKE ?");
     binds.push(`%${kw}%`);
   }
   if (tag) {
-    conds.push('tags LIKE ?');
+    conds.push("tags LIKE ?");
     binds.push(`%${tag}%`);
   }
-  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+  const where = conds.length ? `WHERE ${conds.join(" AND ")}` : "";
 
   const sql = `SELECT id, title, author, created, modified, tags FROM posts ${where} ${orderSql} LIMIT ? OFFSET ?`;
   binds.push(limit, offset);
 
-  const { results } = await env.DB.prepare(sql).bind(...binds).all();
+  const { results } = await env.DB.prepare(sql)
+    .bind(...binds)
+    .all();
   return jsonResponse(results || []);
 }
 
 async function apiGetPost(url, env, request) {
   const sp = url.searchParams;
-  const id = sp.get('id');
+  const id = sp.get("id");
   if (!id) {
-    return jsonResponse({ error: 'missing id' }, { status: 400 });
+    return jsonResponse({ error: "missing id" }, { status: 400 });
   }
-  const key = sp.get('key') || '';
+  const key = sp.get("key") || "";
 
   const row = await env.DB.prepare(
-    'SELECT id, title, author, content, created, modified, tags, comments, hash, extra, status FROM posts WHERE id = ?',
+    "SELECT id, title, author, content, created, modified, tags, comments, hash, extra, status FROM posts WHERE id = ?",
   )
     .bind(id)
     .first();
 
   if (!row || row.status === 2) {
-    return jsonResponse({ error: 'not found' }, { status: 404 });
+    return jsonResponse({ error: "not found" }, { status: 404 });
   }
 
   const isAdmin = verifyAdmin(request, env);
   if (row.status === 1 && !isAdmin) {
-    return jsonResponse({ error: 'not found' }, { status: 404 });
+    return jsonResponse({ error: "not found" }, { status: 404 });
   }
 
   const locked = !!(row.hash && String(row.hash).length > 0);
   if (locked) {
     if (!key) {
-      return jsonResponse({ error: 'locked', code: 'LOCKED' }, { status: 403 });
+      return jsonResponse({ error: "locked", code: "LOCKED" }, { status: 403 });
     }
     const h = await sha256Hex(key);
     if (h !== row.hash) {
-      return jsonResponse({ error: 'wrong password', code: 'WRONG_PASSWORD' }, { status: 403 });
+      return jsonResponse(
+        { error: "wrong password", code: "WRONG_PASSWORD" },
+        { status: 403 },
+      );
     }
   }
 
   let extraOut = row.extra;
   try {
-    if (typeof extraOut === 'string' && extraOut) JSON.parse(extraOut);
+    if (typeof extraOut === "string" && extraOut) JSON.parse(extraOut);
   } catch {
-    extraOut = '{}';
+    extraOut = "{}";
   }
 
   return jsonResponse({
@@ -448,43 +472,63 @@ async function apiGetPost(url, env, request) {
 
 async function apiPostPost(request, env) {
   if (!requireWriteAuth(request, env)) {
-    return jsonResponse({ error: 'unauthorized' }, { status: 401 });
+    return jsonResponse({ error: "unauthorized" }, { status: 401 });
   }
   const body = await readJsonBody(request);
   if (!body.title || !body.author || !body.content) {
-    return jsonResponse({ error: 'title, author, content required' }, { status: 400 });
+    return jsonResponse(
+      { error: "title, author, content required" },
+      { status: 400 },
+    );
   }
 
   const now = new Date().toISOString();
   const created = body.created || now;
   const modified = now;
   const status = Number.isInteger(body.status) ? body.status : 0;
-  const tags = body.tags != null ? String(body.tags) : '';
+  const tags = body.tags != null ? String(body.tags) : "";
   const comments = body.comments === false || body.comments === 0 ? 0 : 1;
-  let hash = '';
+  let hash = "";
   if (body.key) hash = await sha256Hex(String(body.key));
   const extra =
-    typeof body.extra === 'object' && body.extra !== null
+    typeof body.extra === "object" && body.extra !== null
       ? JSON.stringify(body.extra)
       : body.extra != null
         ? String(body.extra)
-        : '{}';
+        : "{}";
 
   let newId;
-  if (body.id != null && body.id !== '') {
+  if (body.id != null && body.id !== "") {
     const id = parseInt(body.id, 10);
     if (Number.isNaN(id)) {
-      return jsonResponse({ error: 'invalid id' }, { status: 400 });
+      return jsonResponse({ error: "invalid id" }, { status: 400 });
     }
     await env.DB.prepare(
       `INSERT OR IGNORE INTO posts (id, title, author, content, created, modified, status, tags, comments, hash, extra)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-      .bind(id, body.title, body.author, body.content, created, modified, status, tags, comments, hash, extra)
+      .bind(
+        id,
+        body.title,
+        body.author,
+        body.content,
+        created,
+        modified,
+        status,
+        tags,
+        comments,
+        hash,
+        extra,
+      )
       .run();
-    const ex = await env.DB.prepare('SELECT id FROM posts WHERE id = ?').bind(id).first();
+    const ex = await env.DB.prepare("SELECT id FROM posts WHERE id = ?")
+      .bind(id)
+      .first();
     if (!ex) {
-      return jsonResponse({ error: 'insert ignored or failed' }, { status: 409 });
+      return jsonResponse(
+        { error: "insert ignored or failed" },
+        { status: 409 },
+      );
     }
     newId = id;
   } else {
@@ -492,7 +536,18 @@ async function apiPostPost(request, env) {
       `INSERT INTO posts (title, author, content, created, modified, status, tags, comments, hash, extra)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
-      .bind(body.title, body.author, body.content, created, modified, status, tags, comments, hash, extra)
+      .bind(
+        body.title,
+        body.author,
+        body.content,
+        created,
+        modified,
+        status,
+        tags,
+        comments,
+        hash,
+        extra,
+      )
       .run();
     newId = r.meta?.last_row_id;
   }
@@ -502,17 +557,19 @@ async function apiPostPost(request, env) {
 
 async function apiPutPost(request, env) {
   if (!requireWriteAuth(request, env)) {
-    return jsonResponse({ error: 'unauthorized' }, { status: 401 });
+    return jsonResponse({ error: "unauthorized" }, { status: 401 });
   }
   const body = await readJsonBody(request);
   const id = body.id != null ? parseInt(body.id, 10) : NaN;
   if (Number.isNaN(id)) {
-    return jsonResponse({ error: 'id required' }, { status: 400 });
+    return jsonResponse({ error: "id required" }, { status: 400 });
   }
 
-  const existing = await env.DB.prepare('SELECT * FROM posts WHERE id = ?').bind(id).first();
+  const existing = await env.DB.prepare("SELECT * FROM posts WHERE id = ?")
+    .bind(id)
+    .first();
   if (!existing) {
-    return jsonResponse({ error: 'not found' }, { status: 404 });
+    return jsonResponse({ error: "not found" }, { status: 404 });
   }
 
   const now = new Date().toISOString();
@@ -524,17 +581,21 @@ async function apiPutPost(request, env) {
   const status = body.status != null ? body.status : existing.status;
   const tags = body.tags != null ? String(body.tags) : existing.tags;
   const comments =
-    body.comments != null ? (body.comments === false || body.comments === 0 ? 0 : 1) : existing.comments;
+    body.comments != null
+      ? body.comments === false || body.comments === 0
+        ? 0
+        : 1
+      : existing.comments;
 
-  let hash = existing.hash || '';
-  if (Object.prototype.hasOwnProperty.call(body, 'key')) {
-    if (body.key === '' || body.key == null) hash = '';
+  let hash = existing.hash || "";
+  if (Object.prototype.hasOwnProperty.call(body, "key")) {
+    if (body.key === "" || body.key == null) hash = "";
     else hash = await sha256Hex(String(body.key));
   }
 
   const extra =
     body.extra != null
-      ? typeof body.extra === 'object'
+      ? typeof body.extra === "object"
         ? JSON.stringify(body.extra)
         : String(body.extra)
       : existing.extra;
@@ -542,7 +603,19 @@ async function apiPutPost(request, env) {
   await env.DB.prepare(
     `UPDATE posts SET title=?, author=?, content=?, created=?, modified=?, status=?, tags=?, comments=?, hash=?, extra=? WHERE id=?`,
   )
-    .bind(title, author, content, created, modified, status, tags, comments, hash, extra, id)
+    .bind(
+      title,
+      author,
+      content,
+      created,
+      modified,
+      status,
+      tags,
+      comments,
+      hash,
+      extra,
+      id,
+    )
     .run();
 
   return jsonResponse({ ok: true, id });
@@ -550,30 +623,30 @@ async function apiPutPost(request, env) {
 
 async function apiDeletePost(request, env) {
   if (!requireWriteAuth(request, env)) {
-    return jsonResponse({ error: 'unauthorized' }, { status: 401 });
+    return jsonResponse({ error: "unauthorized" }, { status: 401 });
   }
   const body = await readJsonBody(request);
   const id = body.id != null ? parseInt(body.id, 10) : NaN;
   if (Number.isNaN(id)) {
-    return jsonResponse({ error: 'id required' }, { status: 400 });
+    return jsonResponse({ error: "id required" }, { status: 400 });
   }
-  await env.DB.prepare('UPDATE posts SET status = 2, modified = ? WHERE id = ?')
+  await env.DB.prepare("UPDATE posts SET status = 2, modified = ? WHERE id = ?")
     .bind(new Date().toISOString(), id)
     .run();
   return jsonResponse({ ok: true });
 }
 
 async function apiGetTags(url, env) {
-  const kw = url.searchParams.get('kw')?.trim() || '';
+  const kw = url.searchParams.get("kw")?.trim() || "";
   const sql = kw
-    ? 'SELECT tags FROM posts WHERE status = 0 AND tags LIKE ?'
-    : 'SELECT tags FROM posts WHERE status = 0';
+    ? "SELECT tags FROM posts WHERE status = 0 AND tags LIKE ?"
+    : "SELECT tags FROM posts WHERE status = 0";
   const stmt = kw ? env.DB.prepare(sql).bind(`%${kw}%`) : env.DB.prepare(sql);
   const { results } = await stmt.all();
   const set = new Set();
   for (const r of results || []) {
     if (!r.tags) continue;
-    for (const t of String(r.tags).split(',')) {
+    for (const t of String(r.tags).split(",")) {
       const x = t.trim();
       if (x) set.add(x);
     }
@@ -588,7 +661,7 @@ async function apiGetConfig(env) {
 
 async function apiPutConfig(request, env) {
   if (!requireWriteAuth(request, env)) {
-    return jsonResponse({ error: 'unauthorized' }, { status: 401 });
+    return jsonResponse({ error: "unauthorized" }, { status: 401 });
   }
   const body = await readJsonBody(request);
   const cur = await loadGlobal(env);
@@ -603,24 +676,24 @@ async function apiPutConfig(request, env) {
     logo: body.logo != null ? body.logo : cur.logo,
     menu:
       body.menu != null
-        ? typeof body.menu === 'string'
+        ? typeof body.menu === "string"
           ? body.menu
           : JSON.stringify(body.menu)
         : JSON.stringify(cur.menu),
     page404:
-      body['404'] != null
-        ? body['404']
+      body["404"] != null
+        ? body["404"]
         : body.page404 != null
           ? body.page404
           : cur.html404,
     extra:
       body.extra != null
-        ? typeof body.extra === 'object'
+        ? typeof body.extra === "object"
           ? JSON.stringify(body.extra)
           : String(body.extra)
-        : typeof cur.extra === 'object'
+        : typeof cur.extra === "object"
           ? JSON.stringify(cur.extra)
-          : String(cur.extra || '{}'),
+          : String(cur.extra || "{}"),
   };
 
   await env.DB.prepare(
@@ -649,25 +722,25 @@ async function apiPutConfig(request, env) {
 async function pageIndex(url, env) {
   const g = await loadGlobal(env);
   const sp = url.searchParams;
-  const sort = sp.get('sort') || 'modified';
-  const order = sp.get('order') || 'desc';
-  const limit = sp.get('limit') || '20';
-  const offset = sp.get('offset') || '0';
+  const sort = sp.get("sort") || "modified";
+  const order = sp.get("order") || "desc";
+  const limit = sp.get("limit") || "20";
+  const offset = sp.get("offset") || "0";
 
-  const extraHead = '';
+  const extraHead = "";
   const bodyHtml = `
 <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;margin-bottom:0.75rem;">
 <label style="margin:.5rem 0;display:flex;align-items:center;gap:0.35rem;font-weight:600;">排序：
     <select id="sortField" style="font-weight:normal;">
-      <option value="modified"${sort === 'modified' ? ' selected' : ''}>更新日期</option>
-      <option value="created"${sort === 'created' ? ' selected' : ''}>发布日期</option>
-      <option value="random"${sort === 'random' ? ' selected' : ''}>随机</option>
+      <option value="modified"${sort === "modified" ? " selected" : ""}>更新日期</option>
+      <option value="created"${sort === "created" ? " selected" : ""}>发布日期</option>
+      <option value="random"${sort === "random" ? " selected" : ""}>随机</option>
     </select>
   </label>
   <label style="margin:0;display:flex;align-items:center;gap:0.35rem;font-weight:600;">
     <select id="sortOrder" style="font-weight:normal;">
-      <option value="desc"${order === 'desc' ? ' selected' : ''}>从新到旧</option>
-      <option value="asc"${order === 'asc' ? ' selected' : ''}>从旧到新</option>
+      <option value="desc"${order === "desc" ? " selected" : ""}>从新到旧</option>
+      <option value="asc"${order === "asc" ? " selected" : ""}>从旧到新</option>
     </select>
   </label>
 </div>
@@ -721,19 +794,27 @@ async function pageIndex(url, env) {
     load();
   })();
 </script>`;
-  return textResponse(pageShell({ title: g.title, global: g, mainId: '文章', bodyHtml, extraHead }));
+  return textResponse(
+    pageShell({
+      title: g.title,
+      global: g,
+      mainId: "文章",
+      bodyHtml,
+      extraHead,
+    }),
+  );
 }
 
 async function pagePost(request, url, env) {
   const g = await loadGlobal(env);
-  const id = url.searchParams.get('id');
+  const id = url.searchParams.get("id");
   if (!id) {
     return textResponse(
       pageShell({
-        title: '404',
+        title: "404",
         global: g,
-        mainId: '404',
-        bodyHtml: g.html404 || '<b>404</b>',
+        mainId: "404",
+        bodyHtml: g.html404 || "<b>404</b>",
       }),
       { status: 404 },
     );
@@ -746,7 +827,7 @@ async function pagePost(request, url, env) {
     <input type="datetime-local" id="adminCreatedAt" />
     <button type="button" id="saveAdminCreated">保存创建时间</button>
   </aside>`
-    : '';
+    : "";
   const extraHead = `<script src="https://fastly.jsdelivr.net/npm/marked/marked.min.js"></script>`;
   const bodyHtml = `
   <article>
@@ -847,14 +928,23 @@ async function pagePost(request, url, env) {
       }
     })();
   </script>`;
-  return textResponse(pageShell({ title: g.title, global: g, mainId: '', bodyHtml, extraHead, addComment: true })); // manually override: dont show "文章" before main content to avoid confusion 
+  return textResponse(
+    pageShell({
+      title: g.title,
+      global: g,
+      mainId: "",
+      bodyHtml,
+      extraHead,
+      addComment: true,
+    }),
+  ); // manually override: dont show "文章" before main content to avoid confusion
 }
 
 async function pageSearch(url, env) {
   const g = await loadGlobal(env);
-  const kw = url.searchParams.get('kw') || '';
-  const tag = url.searchParams.get('tag') || '';
-  const extraHead = '';
+  const kw = url.searchParams.get("kw") || "";
+  const tag = url.searchParams.get("tag") || "";
+  const extraHead = "";
   const bodyHtml = `
 <form id="searchForm" style="width:100%; display: flex; gap:0.5rem; align-items: center;" action="/search" method="get">
   <input type="text" name="kw" id="kw" value="${escapeHtml(kw)}" placeholder="搜索文章..." style="flex:1;">
@@ -902,7 +992,15 @@ async function pageSearch(url, env) {
     run();
   })();
 </script>`;
-  return textResponse(pageShell({ title: '搜索 — ' + g.title, global: g, mainId: '搜索', bodyHtml, extraHead }));
+  return textResponse(
+    pageShell({
+      title: "搜索 — " + g.title,
+      global: g,
+      mainId: "搜索",
+      bodyHtml,
+      extraHead,
+    }),
+  );
 }
 
 async function pageTags(url, env) {
@@ -920,19 +1018,28 @@ async function pageTags(url, env) {
       });
     });
   </script>`;
-  return textResponse(pageShell({ title: '标签 — ' + g.title, global: g, mainId: '标签', bodyHtml }));
+  return textResponse(
+    pageShell({
+      title: "标签 — " + g.title,
+      global: g,
+      mainId: "标签",
+      bodyHtml,
+    }),
+  );
 }
 
 async function pageAdmin(request, env) {
   if (!verifyAdmin(request, env)) {
-    return new Response('Unauthorized', {
+    return new Response("Unauthorized", {
       status: 401,
-      headers: { 'www-authenticate': 'Basic realm="admin"', ...corsHeaders() },
+      headers: { "www-authenticate": 'Basic realm="admin"', ...corsHeaders() },
     });
   }
   const g = await loadGlobal(env);
   const cfg = globalToConfigJson(g);
-  const apiKeyB64 = btoa(`${String(env.USERNAME ?? '')}:${String(env.PASSWORD ?? '')}`);
+  const apiKeyB64 = btoa(
+    `${String(env.USERNAME ?? "")}:${String(env.PASSWORD ?? "")}`,
+  );
   const bodyHtml = `
   <p style="color:#666;margin:0 0 1rem;">修改后点保存。数据删除请用 API 或 D1。<br>若更改未见效，可能需要<a href='https://developers.cloudflare.com/cache/how-to/purge-cache/'>清除Cloudflare对应域名的cache</a></p>
   <label>标题</label><input type="text" id="title"  oninput="dirty=true;"/>
@@ -951,9 +1058,14 @@ async function pageAdmin(request, env) {
   <p>点击查看目前的 APIKey，你在下次访问该网站时需要重新点击。</p>
   <button type="button" id="showApiKey">查看APIKey</button>
   <div id="apiKey" style="display:none; margin: .5rem 0; border-radius:5.43px; width:100%; background-color:#ddd; padding: .25rem .5rem; overflow-x: auto; font-family: monospace;"></div>
+
   <hr>
+  <div style="display:flex; width:100%; box-sizing: border-box; gap:.5rem">
   <button type="button" id="save" style="background-color: green; color: white; border-radius: 6.54px; width:fit-content;">保存</button>
   <button type="button" id="reload" onclick="location.reload();">重新加载</button>
+
+  <button type="button" id="logout" style="border:none; margin-left:auto; background-color: #c00; color: white; border-radius: 6.54px; width:fit-content;">登出</button>
+  </div>
   <script type="application/json" id="ublog-admin-cfg">${jsonForInlineHtml(cfg)}</script>
   <script type="application/json" id="ublog-admin-apikey">${jsonForInlineHtml(apiKeyB64)}</script>
   <script> window.addEventListener("beforeunload", (e) => {if(dirty){e.preventDefault();e.returnValue = "";}});</script>
@@ -979,6 +1091,20 @@ async function pageAdmin(request, env) {
         var v = JSON.parse(document.getElementById('ublog-admin-apikey').textContent);
         document.getElementById('apiKey').textContent = v;
         document.getElementById('apiKey').style.display = 'block';
+      };
+      document.getElementById('logout').onclick = function(){
+        if (!confirm('确定要登出吗？')) return;
+        var key = JSON.parse(document.getElementById('ublog-admin-apikey').textContent);
+        var user = atob(key).split(':')[0];
+        var stamp = String(Date.now());
+        var logoutUrl = new URL('/admin', location.href);
+        logoutUrl.searchParams.set('logout', stamp);
+        var xhr = new XMLHttpRequest();
+        dirty = false;
+        xhr.open('GET', logoutUrl.toString(), true, user, 'logout-' + stamp);
+        xhr.onload = function(){ location.href = new URL('/admin', location.href).toString(); };
+        xhr.onerror = function(){ location.href = new URL('/admin', location.href).toString(); };
+        xhr.send();
       };
       function authHeader(){
         var u = prompt('管理员用户名（将用于 Basic 授权头）:');
@@ -1007,7 +1133,14 @@ async function pageAdmin(request, env) {
       };
     })();
   </script>`;
-  return textResponse(pageShell({ title: '管理 — ' + g.title, global: g, mainId: '管理', bodyHtml }));
+  return textResponse(
+    pageShell({
+      title: "管理 — " + g.title,
+      global: g,
+      mainId: "管理",
+      bodyHtml,
+    }),
+  );
 }
 
 function editorExtraHead() {
@@ -1018,16 +1151,16 @@ function editorExtraHead() {
 
 /** @param {'new'|'edit'} kind @param {string|null} postId edit 时必有 */
 function buildEditorBodyHtml(kind, postId) {
-  const saveLabel = kind === 'new' ? '发布' : '保存';
-  const isNewJs = JSON.stringify(kind === 'new');
-  const urlIdJs = postId == null ? 'null' : JSON.stringify(String(postId));
+  const saveLabel = kind === "new" ? "发布" : "保存";
+  const isNewJs = JSON.stringify(kind === "new");
+  const urlIdJs = postId == null ? "null" : JSON.stringify(String(postId));
   const articleSelectBlock =
-    kind === 'edit'
+    kind === "edit"
       ? `
   <label for="editArticleSelect">选择文章</label>
   <select id="editArticleSelect"><option value="">加载中…</option></select>
 `
-      : '';
+      : "";
   return `${articleSelectBlock}
   <label>标题</label><input type="text" id="title" />
   <label>作者</label><input type="text" id="author" />
@@ -1224,9 +1357,9 @@ async function editorPageResponse(env, kind, postId) {
   const bodyHtml = buildEditorBodyHtml(kind, postId);
   return textResponse(
     pageShell({
-      title: (kind === 'new' ? '写作' : '编辑') + ' — ' + g.title,
+      title: (kind === "new" ? "写作" : "编辑") + " — " + g.title,
       global: g,
-      mainId: kind === 'new' ? '写作' : '编辑',
+      mainId: kind === "new" ? "写作" : "编辑",
       bodyHtml,
       extraHead: editorExtraHead(),
     }),
@@ -1236,62 +1369,45 @@ async function editorPageResponse(env, kind, postId) {
 /** /new：禁止任何 query，有则重定向到纯净 /new */
 async function pageNew(request, url, env) {
   if (!verifyAdmin(request, env)) {
-    return new Response('Unauthorized', {
+    return new Response("Unauthorized", {
       status: 401,
-      headers: { 'www-authenticate': 'Basic realm="editor"', ...corsHeaders() },
+      headers: { "www-authenticate": 'Basic realm="editor"', ...corsHeaders() },
     });
   }
   if ([...url.searchParams.keys()].length > 0) {
-    return Response.redirect(new URL('/new', url.origin).toString(), 302);
+    return Response.redirect(new URL("/new", url.origin).toString(), 302);
   }
-  return editorPageResponse(env, 'new', null);
+  return editorPageResponse(env, "new", null);
 }
 
 /** /edit：必须带 ?id= */
 async function pageEdit(request, url, env) {
   if (!verifyAdmin(request, env)) {
-    return new Response('Unauthorized', {
+    return new Response("Unauthorized", {
       status: 401,
-      headers: { 'www-authenticate': 'Basic realm="editor"', ...corsHeaders() },
+      headers: { "www-authenticate": 'Basic realm="editor"', ...corsHeaders() },
     });
   }
-  const rawId = url.searchParams.get('id');
-  if (rawId == null || String(rawId).trim() === '') {
+  const rawId = url.searchParams.get("id");
+  if (rawId == null || String(rawId).trim() === "") {
     const g = await loadGlobal(env);
     // redirect to /new
-    return Response.redirect(new URL('/new', url.origin).toString(), 302);
+    return Response.redirect(new URL("/new", url.origin).toString(), 302);
   }
-  return editorPageResponse(env, 'edit', String(rawId).trim());
+  return editorPageResponse(env, "edit", String(rawId).trim());
 }
 
 async function page404(env) {
   const g = await loadGlobal(env);
   return textResponse(
-    pageShell({ title: '404', global: g, mainId: '404', bodyHtml: g.html404 || '<b>404</b>' }),
+    pageShell({
+      title: "404",
+      global: g,
+      mainId: "404",
+      bodyHtml: g.html404 || "<b>404</b>",
+    }),
     { status: 404 },
   );
-}
-
-/** 用错误 Basic 触发浏览器替换缓存凭证；不依赖 D1 */
-function pageLogout() {
-  const html = `浏览器对 basic auth的「退出」没有标准做法，<b>不保证</b>在所有浏览器上都能成功，若重新弹出登录框，即代表成功，按「取消」即可完成登出。<br>
-<button type="button" id="go">尝试清除登录状态</button>
-<script>
-document.getElementById('go').onclick=function(){
-  fetch('/purge',{
-    cache:'no-store',
-    headers:{'Authorization':'Basic '+btoa('__logout__:'+String(Math.random()).slice(2))}
-  }).then(function(r){
-    if(r.status===401){
-    }else{
-      alert('session not purged, please retry');
-    }
-  }).catch(function(){
-    alert('session not purged, please retry');
-  });
-};
-</script>`;
-  return textResponse(html);
 }
 
 export default {
@@ -1301,21 +1417,34 @@ export default {
       const path = normalizePath(url.pathname);
       const method = request.method;
 
-      if (method === 'OPTIONS') {
+      if (method === "OPTIONS") {
         return new Response(null, { status: 204, headers: corsHeaders() });
       }
 
-      if (path === '/purge' && method === 'GET') {
-        return new Response(null, {
+      if (
+        path === "/admin" &&
+        method === "GET" &&
+        url.searchParams.has("logout")
+      ) {
+        return new Response("Unauthorized", {
           status: 401,
           headers: {
-            'www-authenticate': 'Basic realm="purge"',
+            "www-authenticate": 'Basic realm="admin"',
+            "cache-control": "no-store",
             ...corsHeaders(),
           },
         });
       }
-      if (path === '/logout' && method === 'GET') {
-        return pageLogout();
+
+      if (method === "LOGOUT") {
+        return new Response("Unauthorized", {
+          status: 401,
+          headers: {
+            "www-authenticate": 'Basic realm="admin"',
+            "cache-control": "no-store",
+            ...corsHeaders(),
+          },
+        });
       }
 
       await ensureDbSchema(env);

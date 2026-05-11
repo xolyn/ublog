@@ -4,11 +4,15 @@
 
 仓库内另含产品展示页 [`landing/`](./landing/)（静态 HTML/CSS/JS）与系统设计说明 [`design.md`](./design.md)。线上 Worker 还会在首次请求时自动建表并注入默认 `config`（无需在 SQL 字面量中硬编码复杂 HTML）。
 
-## demo
+## [demo](https://ublog.zlybox.eu.org)
 
-[![](landing/iShot_2026-04-19_16.35.56.png)](https://ublog.zlybox.eu.org)
+|主页|管理页面|
+|---|---|
+|[![](landing/iShot_2026-04-19_16.35.56.png)](https://ublog.zlybox.eu.org)|[![](landing/iShot_2026-04-19_16.36.25.png)](https://ublog.zlybox.eu.org)|
 
-[![](landing/iShot_2026-04-19_16.36.25.png)](https://ublog.zlybox.eu.org)
+|Cloudflare Bindings|
+|---|
+|![](landing/bindings.png)|
 
 ---
 
