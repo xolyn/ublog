@@ -1,5 +1,5 @@
 const DOCS_REDIRECT_DEFAULT =
-  'https://github.com/zhoulingyu/ublog-cf/blob/main/design.md#api';
+  "https://github.com/zhoulingyu/ublog-cf/blob/main/design.md#api";
 
 /** 与 reference/styles.css 一致（内联，因 Worker 无静态 styles.css 路径） */
 const UBLOG_CSS = `
@@ -25,17 +25,36 @@ textarea { min-height: 8rem; font-family: ui-monospace, monospace; font-size: 0.
 `;
 
 function defaultMenu() {
-  return { 首页: '/', 写作: '/new', 搜索: '/search', 标签: '/tags', 管理: '/admin' };
+  return {
+    首页: "/",
+    写作: "/new",
+    搜索: "/search",
+    标签: "/tags",
+    管理: "/admin",
+  };
 }
 
 function buildMenuOptions(menuObj) {
-  const m = menuObj && typeof menuObj === 'object' && Object.keys(menuObj).length ? menuObj : defaultMenu();
+  const m =
+    menuObj && typeof menuObj === "object" && Object.keys(menuObj).length
+      ? menuObj
+      : defaultMenu();
   return Object.entries(m)
-    .map(([name, href]) => `<option value="${escapeHtml(href)}">${escapeHtml(name)}</option>`)
-    .join('\n    ');
+    .map(
+      ([name, href]) =>
+        `<option value="${escapeHtml(href)}">${escapeHtml(name)}</option>`,
+    )
+    .join("\n    ");
 }
 
-function pageShell({ title, global: g, mainId, bodyHtml, extraHead = '', addComment = false }) {
+function pageShell({
+  title,
+  global: g,
+  mainId,
+  bodyHtml,
+  extraHead = "",
+  addComment = false,
+}) {
   const favicon = g.favicon
     ? `<link rel="icon" href="${escapeHtml(g.favicon)}">`
     : '';
@@ -1301,26 +1320,34 @@ export default {
 
       await ensureDbSchema(env);
 
-      if (path === '/api/docs' && method === 'GET') return apiDocs(request, env);
-      if (path === '/api/posts' && method === 'GET') return apiGetPosts(url, env, request);
-      if (path === '/api/tags' && method === 'GET') return apiGetTags(url, env);
-      if (path === '/api/config' && method === 'GET') return apiGetConfig(env);
-      if (path === '/api/config' && method === 'PUT') return apiPutConfig(request, env);
+      if (path === "/api/docs" && method === "GET")
+        return apiDocs(request, env);
+      if (path === "/api/posts" && method === "GET")
+        return apiGetPosts(url, env, request);
+      if (path === "/api/tags" && method === "GET") return apiGetTags(url, env);
+      if (path === "/api/config" && method === "GET") return apiGetConfig(env);
+      if (path === "/api/config" && method === "PUT")
+        return apiPutConfig(request, env);
 
-      if (path === '/api/post' && method === 'GET') return apiGetPost(url, env, request);
-      if (path === '/api/post' && method === 'POST') return apiPostPost(request, env);
-      if (path === '/api/post' && method === 'PUT') return apiPutPost(request, env);
-      if (path === '/api/post' && method === 'DELETE') return apiDeletePost(request, env);
+      if (path === "/api/post" && method === "GET")
+        return apiGetPost(url, env, request);
+      if (path === "/api/post" && method === "POST")
+        return apiPostPost(request, env);
+      if (path === "/api/post" && method === "PUT")
+        return apiPutPost(request, env);
+      if (path === "/api/post" && method === "DELETE")
+        return apiDeletePost(request, env);
 
-      if (path === '/post' && method === 'GET') return pagePost(request, url, env);
+      if (path === "/post" && method === "GET")
+        return pagePost(request, url, env);
 
-      if (path === '/' || path === '/index') return pageIndex(url, env);
-      if (path === '/search') return pageSearch(url, env);
-      if (path === '/tags') return pageTags(url, env);
-      if (path === '/admin') return pageAdmin(request, env);
-      if (path === '/new') return pageNew(request, url, env);
-      if (path === '/edit') return pageEdit(request, url, env);
-      if (path === '/404') return page404(env);
+      if (path === "/" || path === "/index") return pageIndex(url, env);
+      if (path === "/search") return pageSearch(url, env);
+      if (path === "/tags") return pageTags(url, env);
+      if (path === "/admin") return pageAdmin(request, env);
+      if (path === "/new") return pageNew(request, url, env);
+      if (path === "/edit") return pageEdit(request, url, env);
+      if (path === "/404") return page404(env);
 
       return page404(env);
     } catch (e) {
